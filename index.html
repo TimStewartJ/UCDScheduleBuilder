@@ -7,7 +7,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<link href='http://fonts.googleapis.com/css?family=Roboto:300,400' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="script.js"></script>
 </head>
 
@@ -15,13 +16,16 @@
 
 	<h2>UCD Schedule Builder</h2>
 
-	<p>Enter the classes you wish to take, each seperated by a comma. See below for example</p>
-	<p><i>MAT 021A,AAS 010,DICK 69420</i></p>
+	<div class="container">
 
-	<input type="text" name="enter" class="enter" value="" id="input"/>
-	<input type="button" value="Submit" OnClick="input()"/>
+		<p>Enter the classes you wish to take, each seperated by a comma. See below for example</p>
+		<p><i>MAT 021A,AAS 010,DICK 69420</i></p>
 
-	<p id="output"></p>
+		<div id="form">
+		<!-- hopefully a dynamically loaded form -->
+		</div>
+
+	</div>
 
 </body>
 
