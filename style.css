@@ -1,5 +1,93 @@
 @import "http://fonts.googleapis.com/css?family=Raleway";
 
+body {
+  background-color: #181818;
+  padding: 16px 82px;
+  color: #e0e0e0;
+  font-family: Raleway;
+}
+
+hr {
+  border-top: 1px solid #e0e0e0;
+  width: calc(100% + 128px);
+  margin-left: -64px;
+}
+
+#title-banner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#title {
+  font-size: 65px;
+  margin-left: 18px;
+  line-height: 0;
+}
+
+.container {
+  margin-top: 36px;
+}
+
+p {
+  font-size: 24px;
+  line-height: 0px;
+}
+
+input {
+  border: 1px solid #e0e0e0;
+  background: transparent;
+  color: #e0e0e0;
+  font-size: 18px;
+  padding: 5px 18px;
+  border-radius: 5px;
+  margin-bottom: 24px;
+}
+
 #classInput {
-  width: 400px;
+  border-radius: 0px;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  min-width: 244px;
+  text-overflow: ellipsis;
+  transition: min-width 0.3s, border-bottom 0.2s;
+}
+
+#classInput::placeholder {
+  transition: color 0.2s;
+}
+
+#classInput:hover {
+  min-width: 60%;
+  border-bottom: 1px solid #ffffff;
+}
+
+#classInput:hover::placeholder {
+  color: #acacac;
+}
+#classInput:hover::-moz-placeholder {
+  color: #ffffff;
+}
+
+#classInput:focus {
+  min-width: 60%;
+  outline: none;
+  border-bottom: 1px solid #ffffff;
+}
+
+#classInput:focus::placeholder {
+  color: #acacac;
+}
+#classInput:focus::-moz-placeholder {
+  color: #ffffff;
+}
+
+#submit {
+  font-family: Raleway;
+  transition: border 0.2s, color 0.2s;
+}
+
+#submit:hover {
+  border: 1px solid #ffffff;
+  color: #ffffff;
 }
