@@ -44,7 +44,7 @@ input {
   margin-bottom: 24px;
 }
 
-#classInput {
+#input {
   border-radius: 0px;
   border: none;
   border-bottom: 1px solid #e0e0e0;
@@ -53,32 +53,32 @@ input {
   transition: min-width 0.3s, border-bottom 0.2s;
 }
 
-#classInput::placeholder {
+#input::placeholder {
   transition: color 0.2s;
 }
 
-#classInput:hover {
+#input:hover {
   min-width: 60%;
   border-bottom: 1px solid #ffffff;
 }
 
-#classInput:hover::placeholder {
+#input:hover::placeholder {
   color: #acacac;
 }
-#classInput:hover::-moz-placeholder {
+#input:hover::-moz-placeholder {
   color: #ffffff;
 }
 
-#classInput:focus {
+#input:focus {
   min-width: 60%;
   outline: none;
   border-bottom: 1px solid #ffffff;
 }
 
-#classInput:focus::placeholder {
+#input:focus::placeholder {
   color: #acacac;
 }
-#classInput:focus::-moz-placeholder {
+#input:focus::-moz-placeholder {
   color: #ffffff;
 }
 
