@@ -6,9 +6,9 @@ $(document).ready(function() {
     }).append( $("<p/>").text("Enter the classes you wish to take, each seperated by a comma."), //INPUT for classes
       $("<input/>", {
         type: 'text',
-        id: 'classInput',
+        id: 'input',
         name: 'input',
-        placeholder: 'MAT 021A,DICK 069,AAS 010' //example things
+        placeholder: 'MAT 021A, DICK 069, AAS 010' //example things
       }), $("<p/>").text("Desired Start Time"), //INPUT for minimum time
         $("<input/>", {
         type: 'time',
@@ -40,7 +40,7 @@ $(document).ready(function() {
       console.log(endTime);
 
       scheduler(classes, startTime, endTime); //runs the scripts with all inputs
-      
+
       $("div#form").append(
         $("<p/>").text(classes) //appends their input
       )
