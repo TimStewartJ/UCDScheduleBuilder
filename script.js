@@ -34,17 +34,14 @@ $(document).ready(function() {
       for (var i = 0; i < classes.length; i++) {
         classes[i] = classes[i].trim(); //trims all of the strings of the classes
       }
-      // console logs for all inputs
-      // console.log(classes);
-      // console.log(startTime);
-      // console.log(endTime);
-      var term = "Fall Quarter 2020";
 
-      scheduler(classes, startTime, endTime, term); //schedules classes for 1 term
+      var term = "Fall Quarter 2020";
 
       $("div#form").append(
         $("<p/>").text("Your inputted classes are: " + classes) //appends their inputted classes
       )
+
+      scheduler(classes, startTime, endTime, term); //schedules classes for 1 term
   });
 });
 
@@ -57,8 +54,9 @@ function scheduler(classes, startTime, endTime, term)
     //all of the data in the csv will be stored in a string called rawData
     var rawData = $.csv.toArrays(data);
     var classesArray = CRNSearcher(rawData, classes); //fills up the classes array
+    scheduleGenetics(classesArray, startTime, endTime);
 
-
+    //console.log(classesArray);
   })
 }
 
@@ -82,10 +80,28 @@ function CRNSearcher(rawData, classes)
     }
     if(outputData.length == 0)
     {
-      classesArray[i] = "No Classes found for: " + course;
-      $("div#form").append($("<br/>"),$("<p/>").text(classesArray[i]));
+      $("div#form").append($("<br/>"),$("<p/>").text("No Classes found for: " + course));
     }
     else classesArray[i] = outputData;
   }
   return classesArray;
+}
+
+function scheduleGenetics(classesArray, startTime, endTime)
+{
+  var leastClasses = 9999;
+  var uniqueCRN = new Array();
+  var crnIndex = 0;
+  for(var i = 0; i < classesArray.length; i++)
+  {
+    var uniqueCRNperClass = new Array();
+    for(var j = 0; j < classesArray[i].length; j++)
+    {
+      uniqueCRNperClass[j] = classesArray[i][j][crnIndex];
+    }
+    uniqueCRN[i] = [...new Set(uniqueCRNperClass)];
+    if (uniqueCRN[i].length < leastClasses) leastClasses = uniqueCRN[i].length;
+  }
+  console.log(uniqueCRN);
+  console.log(leastClasses);
 }
