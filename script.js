@@ -54,7 +54,7 @@ function scheduler(classes, startTime, endTime, term)
     //all of the data in the csv will be stored in a string called rawData
     var rawData = $.csv.toArrays(data);
     var classesArray = CRNSearcher(rawData, classes); //fills up the classes array
-    scheduleGenetics(classesArray, startTime, endTime);
+    console.log(combinations(classesArray));
 
     //console.log(classesArray);
   })
@@ -87,9 +87,27 @@ function CRNSearcher(rawData, classes)
   return classesArray;
 }
 
-function scheduleGenetics(classesArray, startTime, endTime)
+function combinations(classesArray)
 {
-  var leastClasses = 9999;
+  var uniqueCRN = getUniqueCRN(classesArray);
+  console.log(uniqueCRN);
+  var leastClasses = getLeastClasses(uniqueCRN);
+
+  var combinations = 0;
+  for(var i = 0; i < leastClasses; i++)
+  {
+    var tempCombinations = 1;
+    for(var j = 0; j < uniqueCRN.length; j++)
+    {
+      tempCombinations *= uniqueCRN[j].length - i;
+    }
+    combinations += tempCombinations;
+  }
+  return combinations;
+}
+
+function getUniqueCRN(classesArray)
+{
   var uniqueCRN = new Array();
   var crnIndex = 0;
   for(var i = 0; i < classesArray.length; i++)
@@ -100,8 +118,16 @@ function scheduleGenetics(classesArray, startTime, endTime)
       uniqueCRNperClass[j] = classesArray[i][j][crnIndex];
     }
     uniqueCRN[i] = [...new Set(uniqueCRNperClass)];
+  }
+  return uniqueCRN;
+}
+
+function getLeastClasses(uniqueCRN)
+{
+  var leastClasses = 9999;
+  for(var i = 0; i < uniqueCRN.length; i++)
+  {
     if (uniqueCRN[i].length < leastClasses) leastClasses = uniqueCRN[i].length;
   }
-  console.log(uniqueCRN);
-  console.log(leastClasses);
+  return leastClasses;
 }
