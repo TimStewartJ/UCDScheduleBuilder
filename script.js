@@ -29,8 +29,11 @@ $(document).ready(function() {
   $('#form').on('submit', function(e) { //function for on submit
       e.preventDefault(); //prevents reloading of the page
       var classes = $("#form :input").serializeArray()[0].value.split(','); //gets an array of all desired classes
-      var startTime = $("#form :input").serializeArray()[1].value; //gets a string of the start
-      var endTime = $("#form :input").serializeArray()[2].value; //gets a string of the end time
+      var startTime = $("#form :input").serializeArray()[1].value.split(':'); //gets a string of the start
+      var endTime = $("#form :input").serializeArray()[2].value.split(':'); //gets a string of the end time
+      startTime = (60*parseInt(startTime[0])) + parseInt(startTime[1]);
+      endTime = (60*parseInt(endTime[0])) + parseInt(endTime[1]);
+      var times = [startTime, endTime]; //makes an array of the start and end times
       for (var i = 0; i < classes.length; i++) {
         classes[i] = classes[i].trim(); //trims all of the strings of the classes
       }
@@ -41,11 +44,12 @@ $(document).ready(function() {
         $("<p/>").text("Your inputted classes are: " + classes) //appends their inputted classes
       )
 
-      scheduler(classes, startTime, endTime, term); //schedules classes for 1 term
+      scheduler(classes, times, term); //schedules classes for 1 term
   });
 });
 
-function scheduler(classes, startTime, endTime, term)
+//function that handles scheduling for one term
+function scheduler(classes, times, term)
 {
   //starts a fetch for the data for the term
   fetch('data\\' + term + ' Classes.csv')
@@ -54,9 +58,12 @@ function scheduler(classes, startTime, endTime, term)
     //all of the data in the csv will be stored in a string called rawData
     var rawData = $.csv.toArrays(data);
     var classesArray = CRNSearcher(rawData, classes); //fills up the classes array
-    console.log(combinations(classesArray));
 
-    //console.log(classesArray);
+    //console.log(getCombinations(classesArray));
+
+    var initPopSize = 1;
+    var timeWeight = .5;
+    console.log(scheduleGenetics(classesArray,initPopSize,times,timeWeight));
   })
 }
 
@@ -87,7 +94,8 @@ function CRNSearcher(rawData, classes)
   return classesArray;
 }
 
-function combinations(classesArray)
+//takes the classesArray (which is the array of 2d arrays of all classes) and returns the maximum number of unique schedules possible.
+function getCombinations(classesArray)
 {
   var uniqueCRN = getUniqueCRN(classesArray);
   console.log(uniqueCRN);
@@ -106,22 +114,7 @@ function combinations(classesArray)
   return combinations;
 }
 
-function getUniqueCRN(classesArray)
-{
-  var uniqueCRN = new Array();
-  var crnIndex = 0;
-  for(var i = 0; i < classesArray.length; i++)
-  {
-    var uniqueCRNperClass = new Array();
-    for(var j = 0; j < classesArray[i].length; j++)
-    {
-      uniqueCRNperClass[j] = classesArray[i][j][crnIndex];
-    }
-    uniqueCRN[i] = [...new Set(uniqueCRNperClass)];
-  }
-  return uniqueCRN;
-}
-
+//takes the uniqueCRN array and returns the number of CRNs that the course with the least has
 function getLeastClasses(uniqueCRN)
 {
   var leastClasses = 9999;
@@ -130,4 +123,129 @@ function getLeastClasses(uniqueCRN)
     if (uniqueCRN[i].length < leastClasses) leastClasses = uniqueCRN[i].length;
   }
   return leastClasses;
+}
+
+//takes the classesArray and returns a 2D array of each class and all unique CRN's of each course
+function getUniqueCRN(classesArray)
+{
+  var uniqueCRN = new Array();
+  var cRNIndex = 0;
+  for(var i = 0; i < classesArray.length; i++)
+  {
+    var uniqueCRNperClass = new Array();
+    for(var j = 0; j < classesArray[i].length; j++)
+    {
+      uniqueCRNperClass[j] = classesArray[i][j][cRNIndex];
+    }
+    uniqueCRN[i] = [...new Set(uniqueCRNperClass)];
+  }
+  return uniqueCRN;
+}
+
+//returns all of the CRNs with their times and course codes from an array of CRNs
+function getCRNsWithTime(cRNs, classesArray)
+{
+  var cRNsWithTime = new Array();
+  var cRNsWithTimeCoutner = 0;
+  var cRNIndex = 0;
+  for(let i = 0; i < classesArray.length; i++)
+  {
+    for(let j = 0; j < classesArray[i].length; j++)
+    {
+      for(let k = 0; k < cRNs.length; k++)
+      {
+        if(classesArray[i][j][cRNIndex] === cRNs[k])
+        {
+          cRNsWithTime[cRNsWithTimeCoutner] = classesArray[i][j];
+          cRNsWithTimeCoutner++;
+        }
+      }
+    }
+  }
+  return cRNsWithTime;
+}
+
+function getTimeFitness(cRNsWithTime, times, timeWeight)
+{
+  var startTimeIndex = 1;
+  var endTimeIndex = 10;
+  var maxTimeFitness = 0;
+  var timeFitness = 0;
+  for(let i = 0; i < cRNsWithTime.length; i++)
+  {
+    for(let j = startTimeIndex; j <= endTimeIndex; j++)
+    {
+      if(cRNsWithTime[i][j] != 0)
+      {
+        if(cRNsWithTime[i][j] > times[1] || cRNsWithTime[i][j] < times[0]) timeFitness += 1;
+        maxTimeFitness++;
+      }
+    }
+  }
+  return (timeFitness / maxTimeFitness) * timeWeight;
+}
+
+function getConflictFitness(cRNsWithTime)
+{
+  var conflicts = 0;
+  var startTimeIndex = 1;
+  var endTimeIndex = 10;
+  var cRNIndex = 0;
+  var cRNsLength = new Array();
+
+  for(let i = 0; i < cRNsWithTime.length; i++)
+  {
+    cRNsLength[i] = new Array();
+    for(let j = startTimeIndex; j <= endTimeIndex; j+=2)
+    {
+      cRNsLength[i][j] = cRNsWithTime[i][j+1] - cRNsWithTime[i][j];
+    }
+  }
+
+  for(let i = 0; i < cRNsWithTime.length; i++)
+  {
+    for(let j = 0; j < cRNsWithTime.length; j++)
+    {
+      if(cRNsWithTime[i][cRNIndex] !== cRNsWithTime[j][cRNIndex])
+      {
+        for(let k = startTimeIndex; k <= endTimeIndex; k+=2)
+        {
+          if((cRNsWithTime[i][k] - cRNsWithTime[j][k] < cRNsLength[j][k] && cRNsWithTime[i][k] - cRNsWithTime[j][k] >= 0) || (cRNsWithTime[j][k] - cRNsWithTime[i][k] < cRNsLength[i][k] && cRNsWithTime[j][k] - cRNsWithTime[i][k] >= 0))
+          {
+            conflicts++;
+          }
+        }
+      }
+    }
+  }
+  return conflicts/2;
+}
+
+//the schedule object, takes in classesArray, CRNs, times, to make a schedule object
+function Schedule(classesArray, cRNs, times, timeWeight)
+{
+  var cRNsWithTime = getCRNsWithTime(cRNs, classesArray);
+  var timeFitness = getTimeFitness(cRNsWithTime, times, timeWeight);
+  var conflictFitness = getConflictFitness(cRNsWithTime)
+  var fitness = timeFitness;
+  this.conflicts = conflictFitness;
+  this.fitness = fitness;
+  this.CRNs = cRNs;
+}
+
+function scheduleGenetics(classesArray, initPopSize, times, timeWeight)
+{
+  var initPopulation = new Array();
+  var uniqueCRN = getUniqueCRN(classesArray);
+  for(var i = 0; i < initPopSize; i++)
+  {
+    initPopulation[i] = new Array();
+    var tempCRN = new Array();
+    for(var j = 0; j < uniqueCRN.length; j++)
+    {
+      tempCRN[j] = uniqueCRN[j][Math.random()*uniqueCRN[j].length | 0];
+    }
+    initPopulation[i] = new Schedule(classesArray,tempCRN,times,timeWeight);
+  }
+  return initPopulation;
 }
