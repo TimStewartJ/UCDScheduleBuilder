@@ -166,7 +166,7 @@ function getCRNsWithTime(cRNs, classesArray)
 }
 
 //returns a given's schedule's time fitness
-function getTimeFitness(cRNsWithTime, times, timeWeight)
+function getTimeData(cRNsWithTime, times, timeWeight)
 {
   var startTimeIndex = 1;
   var endTimeIndex = 10;
@@ -253,13 +253,39 @@ function sortForFitness(currentPop)
 function Schedule(classesArray, cRNs, times, timeWeight)
 {
   var cRNsWithTime = getCRNsWithTime(cRNs, classesArray);
-  var timeData = getTimeFitness(cRNsWithTime, times, timeWeight);
+  var timeData = getTimeData(cRNsWithTime, times, timeWeight);
   var conflicts = getConflictFitness(cRNsWithTime)
   this.conflicts = conflicts;
   this.conflictCount = conflicts.length;
   this.timeFitness = timeData[0];
   this.timeData = timeData.splice(1);
   this.CRNs = cRNs;
+}
+
+function scheduleBreed(schedule1, schedule2)
+{
+  var schedule1Array = new Array();
+  for(let i = 0; i < schedule1.CRNs.length; i++)
+  {
+    schedule1Array[i] = new Array();
+    schedule1Array[i][0] = schedule1.CRNs[i];
+    schedule1Array[i][1] = schedule1.conflicts.indexOf(schedule1.CRNs[i]);
+    schedule1Array[i][2] = schedule1.timeData.indexOf(schedule1.CRNs[i]);
+  }
+  var schedule2Array = new Array();
+  for(let i = 0; i < schedule2.CRNs.length; i++)
+  {
+    schedule2Array[i] = new Array();
+    schedule2Array[i][0] = schedule2.CRNs[i];
+    schedule2Array[i][1] = schedule2.conflicts.indexOf(schedule1.CRNs[i]);
+    schedule2Array[i][2] = schedule2.timeData.indexOf(schedule1.CRNs[i]);
+  }
+
+  var finalCRNs = new Array();
+  for(let i = 0; i < schedule1.CRNs.length; i++)
+  {
+    
+  }
 }
 
 //runs a genetic algorithm for the schedules (hopefully)
@@ -286,14 +312,14 @@ function scheduleGenetics(classesArray, initPopSize, times, timeWeight)
   //{
     currentPop = sortForFitness(currentPop);
     var tempPop = new Array();
-    for(let i = 0; i < popCount/2; i++)
+    var halfPopCount = popCount/2;
+    var offspringCount = 0;
+    for(let i = 0; i < halfPopCount; i+=2)
     {
-      tempPop[i] = currentPop[i];
+      tempPop[offspringCount] = scheduleBreed(currentPop[i],currentPop[i+1]);
+      offspringCount++;
     }
-    for(let i = 0; i < popCount/4; i++)
-    {
-
-    }
+    currentPop = tempPop;
     popCount = currentPop.length;
   //}
   console.log(currentPop);
