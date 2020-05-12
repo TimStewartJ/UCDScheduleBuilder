@@ -284,8 +284,50 @@ function scheduleBreed(schedule1, schedule2)
   var finalCRNs = new Array();
   for(let i = 0; i < schedule1.CRNs.length; i++)
   {
-    
+    let whichScheduleForConflicts = 0;
+    let whichScheduleForTime = 0;
+    if(schedule1Array[i][1] == schedule2Array[i][1] && schedule2Array[i][1] == -1)
+    {
+      whichScheduleForConflicts = 0;
+    }
+    else
+    {
+      if(schedule1Array[i][1] < schedule2Array[i][1])
+      {
+        whichScheduleForConflicts = 0;
+      }
+      else
+      {
+        whichScheduleForConflicts = 1;
+      }
+    }
+    if(schedule1Array[i][2] == schedule2Array[i][2] && schedule2Array[i][2] == -1)
+    {
+      whichScheduleForTime = 0;
+    }
+    else
+    {
+      if(schedule1Array[i][2] < schedule2Array[i][2])
+      {
+        whichScheduleForTime = 0;
+      }
+      else
+      {
+        whichScheduleForTime = 1;
+      }
+    }
+    if(whichScheduleForConflicts != whichScheduleForTime)
+    {
+      if(whichScheduleForConflicts == 0) finalCRNs[i] = schedule1Array[i][0];
+      else finalCRNs[i] = schedule2Array[i][0];
+    }
+    else
+    {
+      if(whichScheduleForConflicts == 0) finalCRNs[i] = schedule1Array[i][0];
+      else finalCRNs[i] = schedule2Array[i][0];
+    }
   }
+  return finalCRNs;
 }
 
 //runs a genetic algorithm for the schedules (hopefully)
@@ -308,20 +350,26 @@ function scheduleGenetics(classesArray, initPopSize, times, timeWeight)
 
   var popCount = initPopulation.length;
   var currentPop = initPopulation;
-  //while(popCount > 1)
-  //{
+  var loopRunner = true
+  while(loopRunner)
+  {
     currentPop = sortForFitness(currentPop);
+    console.log(currentPop);
     var tempPop = new Array();
     var halfPopCount = popCount/2;
-    var offspringCount = 0;
-    for(let i = 0; i < halfPopCount; i+=2)
+    let offspringCount = 0;
+    for(let i = 0; i < currentPop.length; i+=2)
     {
-      tempPop[offspringCount] = scheduleBreed(currentPop[i],currentPop[i+1]);
+      if(i != currentPop.length - 1)
+      {
+      tempPop[offspringCount] = new Schedule(classesArray, scheduleBreed(currentPop[i],currentPop[i+1]), times, timeWeight);
       offspringCount++;
+      }
     }
     currentPop = tempPop;
     popCount = currentPop.length;
-  //}
+    if(popCount == 1) loopRunner = false;
+  }
   console.log(currentPop);
   return initPopulation;
 }
