@@ -61,9 +61,9 @@ function scheduler(classes, times, term)
 
     //console.log(getCombinations(classesArray));
 
-    var initPopSize = 1;
-    var timeWeight = .5;
-    console.log(scheduleGenetics(classesArray,initPopSize,times,timeWeight));
+    var initPopSize = 50;
+    var timeWeight = 1;
+    scheduleGenetics(classesArray,initPopSize,times,timeWeight);
   })
 }
 
@@ -94,7 +94,7 @@ function CRNSearcher(rawData, classes)
   return classesArray;
 }
 
-//takes the classesArray (which is the array of 2d arrays of all classes) and returns the maximum number of unique schedules possible.
+//takes the classesArray (which is the array of 2d arrays of all classes) and returns the maximum number of unique schedules possible (KINDA USELESS btw)
 function getCombinations(classesArray)
 {
   var uniqueCRN = getUniqueCRN(classesArray);
@@ -165,34 +165,53 @@ function getCRNsWithTime(cRNs, classesArray)
   return cRNsWithTime;
 }
 
+//returns a given's schedule's time fitness
 function getTimeFitness(cRNsWithTime, times, timeWeight)
 {
   var startTimeIndex = 1;
   var endTimeIndex = 10;
+  var cRNIndex = 0;
+
   var maxTimeFitness = 0;
   var timeFitness = 0;
+  var timeData = new Array();
+  timeDataCounter = 0;
+
+  //just checks to see if any classes are above the max time or below the min time
   for(let i = 0; i < cRNsWithTime.length; i++)
   {
     for(let j = startTimeIndex; j <= endTimeIndex; j++)
     {
       if(cRNsWithTime[i][j] != 0)
       {
-        if(cRNsWithTime[i][j] > times[1] || cRNsWithTime[i][j] < times[0]) timeFitness += 1;
+        if(cRNsWithTime[i][j] > times[1] || cRNsWithTime[i][j] < times[0])
+        {
+          timeFitness++;
+          timeDataCounter++;
+          timeData[timeDataCounter] = cRNsWithTime[i][cRNIndex];
+        }
         maxTimeFitness++;
       }
     }
   }
-  return (timeFitness / maxTimeFitness) * timeWeight;
+
+  timeData[0] = (timeFitness / maxTimeFitness) * timeWeight;
+  timeData = [...new Set(timeData)];
+  return timeData;
 }
 
+//returns the number of conflicts in CRNS with time
 function getConflictFitness(cRNsWithTime)
 {
-  var conflicts = 0;
   var startTimeIndex = 1;
   var endTimeIndex = 10;
   var cRNIndex = 0;
-  var cRNsLength = new Array();
 
+  var conflicts = new Array();
+  var cRNsLength = new Array();
+  var conflictCounter = 0;
+
+  //makes an array of the lengths of the classes in CRNSwithTime
   for(let i = 0; i < cRNsWithTime.length; i++)
   {
     cRNsLength[i] = new Array();
@@ -202,6 +221,7 @@ function getConflictFitness(cRNsWithTime)
     }
   }
 
+  //checks for conflicts
   for(let i = 0; i < cRNsWithTime.length; i++)
   {
     for(let j = 0; j < cRNsWithTime.length; j++)
@@ -212,40 +232,70 @@ function getConflictFitness(cRNsWithTime)
         {
           if((cRNsWithTime[i][k] - cRNsWithTime[j][k] < cRNsLength[j][k] && cRNsWithTime[i][k] - cRNsWithTime[j][k] >= 0) || (cRNsWithTime[j][k] - cRNsWithTime[i][k] < cRNsLength[i][k] && cRNsWithTime[j][k] - cRNsWithTime[i][k] >= 0))
           {
-            conflicts++;
+            conflicts[conflictCounter] = cRNsWithTime[i][cRNIndex];
+            conflictCounter++;
           }
         }
       }
     }
   }
-  return conflicts/2;
+  return conflicts;
+}
+
+function sortForFitness(currentPop)
+{
+  currentPop.sort((a, b) => parseFloat(a.timeFitness) - parseFloat(b.timeFitness));
+  currentPop.sort((a, b) => parseFloat(a.conflictCount) - parseFloat(b.conflictCount));
+  return currentPop;
 }
 
 //the schedule object, takes in classesArray, CRNs, times, to make a schedule object
 function Schedule(classesArray, cRNs, times, timeWeight)
 {
   var cRNsWithTime = getCRNsWithTime(cRNs, classesArray);
-  var timeFitness = getTimeFitness(cRNsWithTime, times, timeWeight);
-  var conflictFitness = getConflictFitness(cRNsWithTime)
-  var fitness = timeFitness;
-  this.conflicts = conflictFitness;
-  this.fitness = fitness;
+  var timeData = getTimeFitness(cRNsWithTime, times, timeWeight);
+  var conflicts = getConflictFitness(cRNsWithTime)
+  this.conflicts = conflicts;
+  this.conflictCount = conflicts.length;
+  this.timeFitness = timeData[0];
+  this.timeData = timeData.splice(1);
   this.CRNs = cRNs;
 }
 
+//runs a genetic algorithm for the schedules (hopefully)
 function scheduleGenetics(classesArray, initPopSize, times, timeWeight)
 {
   var initPopulation = new Array();
   var uniqueCRN = getUniqueCRN(classesArray);
-  for(var i = 0; i < initPopSize; i++)
+
+  //population initialization
+  for(let i = 0; i < initPopSize; i++)
   {
     initPopulation[i] = new Array();
     var tempCRN = new Array();
-    for(var j = 0; j < uniqueCRN.length; j++)
+    for(let j = 0; j < uniqueCRN.length; j++)
     {
       tempCRN[j] = uniqueCRN[j][Math.random()*uniqueCRN[j].length | 0];
     }
     initPopulation[i] = new Schedule(classesArray,tempCRN,times,timeWeight);
   }
+
+  var popCount = initPopulation.length;
+  var currentPop = initPopulation;
+  //while(popCount > 1)
+  //{
+    currentPop = sortForFitness(currentPop);
+    var tempPop = new Array();
+    for(let i = 0; i < popCount/2; i++)
+    {
+      tempPop[i] = currentPop[i];
+    }
+    for(let i = 0; i < popCount/4; i++)
+    {
+
+    }
+    popCount = currentPop.length;
+  //}
+  console.log(currentPop);
   return initPopulation;
 }
