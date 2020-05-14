@@ -63,7 +63,9 @@ function scheduler(classes, times, term)
 
     var initPopSize = 50;
     var timeWeight = 1;
-    scheduleGenetics(classesArray,initPopSize,times,timeWeight);
+    var generations = 10;
+    var listCount = 8;
+    console.log(scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount));
   })
 }
 
@@ -98,7 +100,7 @@ function CRNSearcher(rawData, classes)
 function getCombinations(classesArray)
 {
   var uniqueCRN = getUniqueCRN(classesArray);
-  console.log(uniqueCRN);
+
   var leastClasses = getLeastClasses(uniqueCRN);
 
   var combinations = 0;
@@ -246,7 +248,6 @@ function sortForFitness(currentPop)
 {
   currentPop.sort((a, b) => parseFloat(a.timeFitness) - parseFloat(b.timeFitness));
   currentPop.sort((a, b) => parseFloat(a.conflictCount) - parseFloat(b.conflictCount));
-  return currentPop;
 }
 
 //the schedule object, takes in classesArray, CRNs, times, to make a schedule object
@@ -284,12 +285,9 @@ function scheduleBreed(schedule1, schedule2)
   var finalCRNs = new Array();
   for(let i = 0; i < schedule1.CRNs.length; i++)
   {
-    let whichScheduleForConflicts = 0;
-    let whichScheduleForTime = 0;
-    if(schedule1Array[i][1] == schedule2Array[i][1] && schedule2Array[i][1] == -1)
-    {
-      whichScheduleForConflicts = 0;
-    }
+    let whichScheduleForConflicts = -1;
+    let whichScheduleForTime = -1;
+    if(schedule1Array[i][1] == schedule2Array[i][1] && schedule2Array[i][1] == -1){} //no conficts
     else
     {
       if(schedule1Array[i][1] < schedule2Array[i][1])
@@ -301,10 +299,8 @@ function scheduleBreed(schedule1, schedule2)
         whichScheduleForConflicts = 1;
       }
     }
-    if(schedule1Array[i][2] == schedule2Array[i][2] && schedule2Array[i][2] == -1)
-    {
-      whichScheduleForTime = 0;
-    }
+
+    if(schedule1Array[i][2] == schedule2Array[i][2] && schedule2Array[i][2] == -1){} //no time things
     else
     {
       if(schedule1Array[i][2] < schedule2Array[i][2])
@@ -316,6 +312,7 @@ function scheduleBreed(schedule1, schedule2)
         whichScheduleForTime = 1;
       }
     }
+
     if(whichScheduleForConflicts != whichScheduleForTime)
     {
       if(whichScheduleForConflicts == 0) finalCRNs[i] = schedule1Array[i][0];
@@ -331,7 +328,7 @@ function scheduleBreed(schedule1, schedule2)
 }
 
 //runs a genetic algorithm for the schedules (hopefully)
-function scheduleGenetics(classesArray, initPopSize, times, timeWeight)
+function scheduleGenetics(classesArray, initPopSize, times, timeWeight, generations)
 {
   var initPopulation = new Array();
   var uniqueCRN = getUniqueCRN(classesArray);
@@ -339,8 +336,7 @@ function scheduleGenetics(classesArray, initPopSize, times, timeWeight)
   //population initialization
   for(let i = 0; i < initPopSize; i++)
   {
-    initPopulation[i] = new Array();
-    var tempCRN = new Array();
+    let tempCRN = new Array();
     for(let j = 0; j < uniqueCRN.length; j++)
     {
       tempCRN[j] = uniqueCRN[j][Math.random()*uniqueCRN[j].length | 0];
@@ -348,28 +344,63 @@ function scheduleGenetics(classesArray, initPopSize, times, timeWeight)
     initPopulation[i] = new Schedule(classesArray,tempCRN,times,timeWeight);
   }
 
-  var popCount = initPopulation.length;
+  sortForFitness(initPopulation);
   var currentPop = initPopulation;
-  var loopRunner = true
-  while(loopRunner)
+
+  for(let i = 0; i < generations; i++)
   {
-    currentPop = sortForFitness(currentPop);
-    console.log(currentPop);
-    var tempPop = new Array();
-    var halfPopCount = popCount/2;
-    let offspringCount = 0;
-    for(let i = 0; i < currentPop.length; i+=2)
+    let leastConflictIndex = 0;
+    let leastConflicts = currentPop[0].conflictCount;
+    while(currentPop[leastConflictIndex].conflictCount == leastConflicts && leastConflictIndex < currentPop.length)
     {
-      if(i != currentPop.length - 1)
-      {
-      tempPop[offspringCount] = new Schedule(classesArray, scheduleBreed(currentPop[i],currentPop[i+1]), times, timeWeight);
-      offspringCount++;
-      }
+      leastConflictIndex++;
     }
-    currentPop = tempPop;
-    popCount = currentPop.length;
-    if(popCount == 1) loopRunner = false;
+    for(let j = leastConflictIndex; j < currentPop.length; j++)
+    {
+      let tempCRN = new Array();
+      for(let k = 0; k < uniqueCRN.length; k++)
+      {
+        tempCRN[k] = uniqueCRN[k][Math.random()*uniqueCRN[k].length | 0];
+      }
+      currentPop[j] = new Schedule(classesArray, tempCRN, times, timeWeight);
+    }
+    [...new Map(currentPop.map(item => [item['CRNs'], item])).values()] //get rid of dupes i think
+    sortForFitness(currentPop);
   }
-  console.log(currentPop);
-  return initPopulation;
+  //console.log(currentPop);
+  return currentPop;
+}
+
+function scheduleListBreeder(scheduleList1, scheduleList2)
+{
+  outputList = new Array();
+  for(let i = 0; i < scheduleList1.length/2; i++)
+  {
+    outputList.push(scheduleList1[i]);
+  }
+  for(let i = 0; i < scheduleList2.length/2; i++)
+  {
+    outputList.push(scheduleList2[i]);
+  }
+  sortForFitness(outputList);
+  return outputList;
+}
+
+function scheduleListGenetics(classesArray, initPopSize, times, timeWeight, generations, listCount)
+{
+  var listArray = new Array();
+  for(let i = 0; i < listCount; i++)
+  {
+    listArray[i] = scheduleGenetics(classesArray, initPopSize, times, timeWeight, generations);
+  }
+  while(listArray.length > 1)
+  {
+    let tempArray = new Array();
+    for(let i = 0; i < listArray.length; i+=2)
+    {
+      tempArray.push(scheduleListBreeder(listArray[i],listArray[i+1]));
+    }
+    listArray = tempArray;
+  }
+  return listArray;
 }
