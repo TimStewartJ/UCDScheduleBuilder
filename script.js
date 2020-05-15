@@ -48,6 +48,11 @@ $(document).ready(function() {
   });
 });
 
+var courseCodeIndex = 11;
+var cRNIndex = 0;
+var startTimeIndex = 1;
+var endTimeIndex = 10;
+
 //function that handles scheduling for one term
 function scheduler(classes, times, term)
 {
@@ -65,7 +70,9 @@ function scheduler(classes, times, term)
     var timeWeight = 1;
     var generations = 10;
     var listCount = 8;
-    console.log(scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount));
+    var finalScheduleList = scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount);
+    scheduleDisplayer(finalScheduleList[0][0], classesArray,term);
+    //console.log(finalScheduleList);
   })
 }
 
@@ -78,7 +85,7 @@ function CRNSearcher(rawData, classes)
     var course = classes[i];
     var outputData = new Array();
     var outputCounter = 0;
-    var courseCodeIndex = 11; //the index of the csv that holds the course code
+
     for(var j = 0; j < rawData.length; j++)
     {
       if(rawData[j][courseCodeIndex] === course)
@@ -100,7 +107,6 @@ function CRNSearcher(rawData, classes)
 function getCombinations(classesArray)
 {
   var uniqueCRN = getUniqueCRN(classesArray);
-
   var leastClasses = getLeastClasses(uniqueCRN);
 
   var combinations = 0;
@@ -131,7 +137,7 @@ function getLeastClasses(uniqueCRN)
 function getUniqueCRN(classesArray)
 {
   var uniqueCRN = new Array();
-  var cRNIndex = 0;
+
   for(var i = 0; i < classesArray.length; i++)
   {
     var uniqueCRNperClass = new Array();
@@ -149,7 +155,7 @@ function getCRNsWithTime(cRNs, classesArray)
 {
   var cRNsWithTime = new Array();
   var cRNsWithTimeCoutner = 0;
-  var cRNIndex = 0;
+
   for(let i = 0; i < classesArray.length; i++)
   {
     for(let j = 0; j < classesArray[i].length; j++)
@@ -170,10 +176,6 @@ function getCRNsWithTime(cRNs, classesArray)
 //returns a given's schedule's time fitness
 function getTimeData(cRNsWithTime, times, timeWeight)
 {
-  var startTimeIndex = 1;
-  var endTimeIndex = 10;
-  var cRNIndex = 0;
-
   var maxTimeFitness = 0;
   var timeFitness = 0;
   var timeData = new Array();
@@ -205,10 +207,6 @@ function getTimeData(cRNsWithTime, times, timeWeight)
 //returns the number of conflicts in CRNS with time
 function getConflictFitness(cRNsWithTime)
 {
-  var startTimeIndex = 1;
-  var endTimeIndex = 10;
-  var cRNIndex = 0;
-
   var conflicts = new Array();
   var cRNsLength = new Array();
   var conflictCounter = 0;
@@ -351,7 +349,7 @@ function scheduleGenetics(classesArray, initPopSize, times, timeWeight, generati
   {
     let leastConflictIndex = 0;
     let leastConflicts = currentPop[0].conflictCount;
-    while(currentPop[leastConflictIndex].conflictCount == leastConflicts && leastConflictIndex < currentPop.length)
+    while(leastConflictIndex < currentPop.length && currentPop[leastConflictIndex].conflictCount == leastConflicts)
     {
       leastConflictIndex++;
     }
@@ -403,4 +401,28 @@ function scheduleListGenetics(classesArray, initPopSize, times, timeWeight, gene
     listArray = tempArray;
   }
   return listArray;
+}
+
+function scheduleDisplayer(scheduleToDisplay,classesArray,term)
+{
+  var tableID = (Math.random() + "ID").split(".")[1];
+  var cRNsWithTime = getCRNsWithTime(scheduleToDisplay.CRNs,classesArray);
+  $("div#form").append($("<h2/>").text("Schedule for " + term + ":"));
+  $("div#form").append($("<p/>").text("Debug info: time fitness: " + scheduleToDisplay.timeFitness + " conflicts: " + scheduleToDisplay.conflictCount));
+  $("div#form").append($("<table id=\"" + tableID + "\"/>").append("<tr> <th>Course Code</th> <th>CRN</th> <th>M Start</th> <th>M End</th> <th>T Start</th> <th>T End</th> <th>W Start</th> <th>W End</th> <th>R Start</th> <th>R End</th> <th>F Start</th> <th>F End</th> </tr>"));
+
+  for(let i = 0; i < cRNsWithTime.length; i++)
+  {
+    var trString = tableID + "DICK" + i + "row";
+    $("table#" + tableID).append($("<tr class='" + trString + "'><td>" + cRNsWithTime[i][courseCodeIndex] + "</td><td>" + cRNsWithTime[i][cRNIndex] + "</td>"));
+    for(let j = startTimeIndex; j <= endTimeIndex; j++)
+    {
+      var time;
+      if(cRNsWithTime[i][j] === "") time = "";
+      else if(cRNsWithTime[i][j]%60 == 0) time = Math.floor(cRNsWithTime[i][j]/60) + ":" + cRNsWithTime[i][j]%60 + "0";
+      else time = Math.floor(cRNsWithTime[i][j]/60) + ":" + cRNsWithTime[i][j]%60;
+      $("tr." + trString).append($("<td/>").text(time));
+    }
+    $("table#" + tableID).append("</tr>");
+  }
 }
