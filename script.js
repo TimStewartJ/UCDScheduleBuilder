@@ -103,36 +103,6 @@ function CRNSearcher(rawData, classes)
   return classesArray;
 }
 
-//takes the classesArray (which is the array of 2d arrays of all classes) and returns the maximum number of unique schedules possible (KINDA USELESS btw)
-function getCombinations(classesArray)
-{
-  var uniqueCRN = getUniqueCRN(classesArray);
-  var leastClasses = getLeastClasses(uniqueCRN);
-
-  var combinations = 0;
-  for(var i = 0; i < leastClasses; i++)
-  {
-    var tempCombinations = 1;
-    for(var j = 0; j < uniqueCRN.length; j++)
-    {
-      tempCombinations *= uniqueCRN[j].length - i;
-    }
-    combinations += tempCombinations;
-  }
-  return combinations;
-}
-
-//takes the uniqueCRN array and returns the number of CRNs that the course with the least has
-function getLeastClasses(uniqueCRN)
-{
-  var leastClasses = 9999;
-  for(var i = 0; i < uniqueCRN.length; i++)
-  {
-    if (uniqueCRN[i].length < leastClasses) leastClasses = uniqueCRN[i].length;
-  }
-  return leastClasses;
-}
-
 //takes the classesArray and returns a 2D array of each class and all unique CRN's of each course
 function getUniqueCRN(classesArray)
 {
