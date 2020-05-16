@@ -91,7 +91,7 @@ function scheduler(classes, times, term)
     var finalScheduleList = scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount);
     scheduleDisplayer(finalScheduleList[0][0], classesArray,term);
 
-    //getAvailabilityData();
+    getAvailabilityData();
     //console.log(finalScheduleList);
   })
 }
@@ -419,11 +419,8 @@ function scheduleDisplayer(scheduleToDisplay,classesArray,term)
 
 function getAvailabilityData()
 {
-  console.log("DICK dsfad")
-  let xhr = new XMLHttpRequest;
-  xhr.open('GET', 'https://registrar-apps.ucdavis.edu/courses/search/index.cfm', true);
-  xhr.onload = funtion()
-    {
-      console.log("dick");
-    }
+  console.log("DICK dsfad");
+  fetch('https://registrar-apps.ucdavis.edu/courses/search/index.cfm')
+    .then(res => res.json())//response type
+    .then(data => console.log(data)); //log the data;
 }
