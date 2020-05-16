@@ -43,8 +43,6 @@ $(document).ready(function() {
   $('#form').on('submit', function(e) { //function for on submit
       e.preventDefault(); //prevents reloading of the page
 
-      console.log($("#form :input").serializeArray());
-
       var classes = $("#form :input").serializeArray()[0].value.split(','); //gets an array of all desired classes
       //OLD time input
       //var startTime = $("#form :input").serializeArray()[1].value.split(':'); //gets a string of the start
@@ -57,8 +55,6 @@ $(document).ready(function() {
       for (var i = 0; i < classes.length; i++) {
         classes[i] = classes[i].trim(); //trims all of the strings of the classes
       }
-
-      console.log(times);
 
       var term = "Fall Quarter 2020";
 
@@ -94,6 +90,8 @@ function scheduler(classes, times, term)
     var listCount = 8;
     var finalScheduleList = scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount);
     scheduleDisplayer(finalScheduleList[0][0], classesArray,term);
+
+    //getAvailabilityData();
     //console.log(finalScheduleList);
   })
 }
@@ -417,4 +415,15 @@ function scheduleDisplayer(scheduleToDisplay,classesArray,term)
     }
     $("table#" + tableID).append("</tr>");
   }
+}
+
+function getAvailabilityData()
+{
+  console.log("DICK dsfad")
+  let xhr = new XMLHttpRequest;
+  xhr.open('GET', 'https://registrar-apps.ucdavis.edu/courses/search/index.cfm', true);
+  xhr.onload = funtion()
+    {
+      console.log("dick");
+    }
 }
