@@ -30,6 +30,8 @@ $(document).ready(function() {
 
         $("<input type='checkbox' id='pullAvailability' name='pullAvailability'>"),
         $("<label for='pullAvailability'>Pull Class Availability</label>"),
+        $("<input type='checkbox' id='debugText' name='debugText'>"),
+        $("<label for='debugText'>Enable Debug Text</label>"),
 
         //$("<input type='checkbox' id='pullAvailability' name='pullAvailability'>"),
         //$("<label for='pullAvailability'>Pull Class Availability</label>"),
@@ -68,13 +70,14 @@ $(document).ready(function() {
         classes[i] = classes[i].trim(); //trims all of the strings of the classes
       }
       var pullAvailability = $("#pullAvailability")[0].checked;
+      var debugText = $("#debugText")[0].checked;
       var term = 0;
 
       $("div#form").append(
         $("<p/>").text("Your inputted classes are: " + classes) //appends their inputted classes
       )
 
-      scheduler(classes, times, term, pullAvailability); //schedules classes for 1 term
+      scheduler(classes, times, term, pullAvailability, debugText); //schedules classes for 1 term
   });
 });
 
@@ -89,7 +92,7 @@ var terms = [
 ]
 
 //function that handles scheduling for one term
-function scheduler(classes, times, term, pullAvailability)
+function scheduler(classes, times, term, pullAvailability, debugText)
 {
   //starts a fetch for the data for the term
   fetch('data\\' + terms[term][1] + ' Classes.csv')
@@ -104,7 +107,7 @@ function scheduler(classes, times, term, pullAvailability)
     var generations = 10;
     var listCount = 8;
     var finalScheduleList = scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount);
-    scheduleDisplayer(finalScheduleList[0][0],classesArray,term,pullAvailability);
+    scheduleDisplayer(finalScheduleList[0][0],classesArray,term,pullAvailability,debugText);
   })
 }
 
@@ -405,13 +408,18 @@ function scheduleListGenetics(classesArray, initPopSize, times, timeWeight, gene
   return listArray;
 }
 
-function scheduleDisplayer(scheduleToDisplay,classesArray,term,pullAvailability)
+function scheduleDisplayer(scheduleToDisplay,classesArray,term,pullAvailability,debugText)
 {
   var tableID = (Math.random() + "ID").split(".")[1];
   var crnsWithTime = getCRNsWithTime(scheduleToDisplay.CRNs,classesArray);
   var crnBlacklist = new Array();
+  var debugInfo = "";
+  if (debugText)
+  {
+    debugInfo = "Debug info: time fitness: " + scheduleToDisplay.timeFitness + " conflicts: " + scheduleToDisplay.conflictCount;
+  }
   $("div#form").append($("<h2/>").text("Schedule for " + terms[0][1] + ":"));
-  $("div#form").append($("<p/>").text("Debug info: time fitness: " + scheduleToDisplay.timeFitness + " conflicts: " + scheduleToDisplay.conflictCount));
+  $("div#form").append($("<p/>").text(debugInfo));
   $("div#form").append($("<table id=\"" + tableID + "\"/>").append("<tr> <th>Course Code</th> <th>CRN</th> <th>M Start</th> <th>M End</th> <th>T Start</th> <th>T End</th> <th>W Start</th> <th>W End</th> <th>R Start</th> <th>R End</th> <th>F Start</th> <th>F End</th> <th>Available Seats</th> </tr>"));
 
   for(let i = 0; i < crnsWithTime.length; i++)
