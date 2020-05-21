@@ -3,12 +3,12 @@ $(document).ready(function() {
     $("<form/>",{ //FORM creation
       action:'#',
       method:'#'
-    }).append( $("<p/>").text("Enter the classes you wish to take, each seperated by a comma."), //INPUT for classes
+    }).append( $("<p/>").text("Enter the course codes of the classes you wish to take, each seperated by a comma."), //INPUT for classes
       $("<input/>", {
         type: 'text',
         id: 'input',
         name: 'input',
-        placeholder: 'MAT 021A, DICK 069, AAS 010' //example things
+        placeholder: 'EX: MAT 021B, PHY 009A, CHE 002A' //example things
       // OLD time inputs
       // }), $("<p/>").text("Minimum Class Time"), //INPUT for minimum time
       //   $("<input/>", {
@@ -20,16 +20,28 @@ $(document).ready(function() {
       //   type: 'time',
       //   id: 'endTime',
       //   name: 'endTime'
-      }), $("<p/>").text("Other Minimum Class Time"), //alternate input for time
-        $("<input type='text' id='startTime2' name='startTime2' data-format='HH:mm' data-template='HH : mm'>"
-      ), $("<p/>").text("Other Maximum Class Time"), //alternate input for time
-        $("<input type='text' id='endTime2' name='endTime2' data-format='HH:mm' data-template='HH : mm'>"
-      ), $("<br/>"), $("<br/>"), $("<input/>", { //submit button
+      }),
+        $("<p/>").text("Other Minimum Class Time"), //alternate input for time
+        $("<input type='text' id='startTime2' name='startTime2' data-format='HH:mm' data-template='HH : mm'>"),
+        $("<p/>").text("Other Maximum Class Time"), //alternate input for time
+        $("<input type='text' id='endTime2' name='endTime2' data-format='HH:mm' data-template='HH : mm'>"),
+
+        $("<p/>").text("Experimental Features!"), //alternate input for time
+
+        $("<input type='checkbox' id='pullAvailability' name='pullAvailability'>"),
+        $("<label for='pullAvailability'>Pull Class Availability</label>"),
+
+        //$("<input type='checkbox' id='pullAvailability' name='pullAvailability'>"),
+        //$("<label for='pullAvailability'>Pull Class Availability</label>"),
+
+        $("<br/>"), $("<br/>"),
+        $("<input/>", { //submit button
         type: 'submit',
         id: 'submit',
         value: 'Submit'
-      }))
-    );
+      })
+    )
+  );
 
   $('#startTime2').combodate({
     firstItem: 'name',
@@ -55,44 +67,44 @@ $(document).ready(function() {
       for (var i = 0; i < classes.length; i++) {
         classes[i] = classes[i].trim(); //trims all of the strings of the classes
       }
-
-      var term = "Fall Quarter 2020";
+      var pullAvailability = $("#pullAvailability")[0].checked;
+      var term = 0;
 
       $("div#form").append(
         $("<p/>").text("Your inputted classes are: " + classes) //appends their inputted classes
       )
 
-      scheduler(classes, times, term); //schedules classes for 1 term
+      scheduler(classes, times, term, pullAvailability); //schedules classes for 1 term
   });
 });
 
 var courseCodeIndex = 11;
-var cRNIndex = 0;
+var crnIndex = 0;
 var startTimeIndex = 1;
 var endTimeIndex = 10;
+var terms = [
+  [202010,"Fall Quarter 2020"],
+  [202003,"Spring Quarter 2020"],
+  [202001,"Winter Quarter 2020"]
+]
 
 //function that handles scheduling for one term
-function scheduler(classes, times, term)
+function scheduler(classes, times, term, pullAvailability)
 {
   //starts a fetch for the data for the term
-  fetch('data\\' + term + ' Classes.csv')
+  fetch('data\\' + terms[term][1] + ' Classes.csv')
   .then(response => response.text())
   .then((data) => {
     //all of the data in the csv will be stored in a string called rawData
     var rawData = $.csv.toArrays(data);
     var classesArray = CRNSearcher(rawData, classes); //fills up the classes array
 
-    //console.log(getCombinations(classesArray));
-
     var initPopSize = 50;
     var timeWeight = 1;
     var generations = 10;
     var listCount = 8;
     var finalScheduleList = scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount);
-    scheduleDisplayer(finalScheduleList[0][0], classesArray,term);
-
-    getAvailabilityData();
-    //console.log(finalScheduleList);
+    scheduleDisplayer(finalScheduleList[0][0],classesArray,term,pullAvailability);
   })
 }
 
@@ -133,7 +145,7 @@ function getUniqueCRN(classesArray)
     var uniqueCRNperClass = new Array();
     for(var j = 0; j < classesArray[i].length; j++)
     {
-      uniqueCRNperClass[j] = classesArray[i][j][cRNIndex];
+      uniqueCRNperClass[j] = classesArray[i][j][crnIndex];
     }
     uniqueCRN[i] = [...new Set(uniqueCRNperClass)];
   }
@@ -141,30 +153,30 @@ function getUniqueCRN(classesArray)
 }
 
 //returns all of the CRNs with their times and course codes from an array of CRNs
-function getCRNsWithTime(cRNs, classesArray)
+function getCRNsWithTime(crns, classesArray)
 {
-  var cRNsWithTime = new Array();
-  var cRNsWithTimeCoutner = 0;
+  var crnsWithTime = new Array();
+  var crnsWithTimeCoutner = 0;
 
   for(let i = 0; i < classesArray.length; i++)
   {
     for(let j = 0; j < classesArray[i].length; j++)
     {
-      for(let k = 0; k < cRNs.length; k++)
+      for(let k = 0; k < crns.length; k++)
       {
-        if(classesArray[i][j][cRNIndex] === cRNs[k])
+        if(classesArray[i][j][crnIndex] === crns[k])
         {
-          cRNsWithTime[cRNsWithTimeCoutner] = classesArray[i][j];
-          cRNsWithTimeCoutner++;
+          crnsWithTime[crnsWithTimeCoutner] = classesArray[i][j];
+          crnsWithTimeCoutner++;
         }
       }
     }
   }
-  return cRNsWithTime;
+  return crnsWithTime;
 }
 
 //returns a given's schedule's time fitness
-function getTimeData(cRNsWithTime, times, timeWeight)
+function getTimeData(crnsWithTime, times, timeWeight)
 {
   var maxTimeFitness = 0;
   var timeFitness = 0;
@@ -172,17 +184,17 @@ function getTimeData(cRNsWithTime, times, timeWeight)
   timeDataCounter = 0;
 
   //just checks to see if any classes are above the max time or below the min time
-  for(let i = 0; i < cRNsWithTime.length; i++)
+  for(let i = 0; i < crnsWithTime.length; i++)
   {
     for(let j = startTimeIndex; j <= endTimeIndex; j++)
     {
-      if(cRNsWithTime[i][j] != 0)
+      if(crnsWithTime[i][j] != 0)
       {
-        if(cRNsWithTime[i][j] > times[1] || cRNsWithTime[i][j] < times[0])
+        if(crnsWithTime[i][j] > times[1] || crnsWithTime[i][j] < times[0])
         {
           timeFitness++;
           timeDataCounter++;
-          timeData[timeDataCounter] = cRNsWithTime[i][cRNIndex];
+          timeData[timeDataCounter] = crnsWithTime[i][crnIndex];
         }
         maxTimeFitness++;
       }
@@ -195,34 +207,34 @@ function getTimeData(cRNsWithTime, times, timeWeight)
 }
 
 //returns the number of conflicts in CRNS with time
-function getConflictFitness(cRNsWithTime)
+function getConflictFitness(crnsWithTime)
 {
   var conflicts = new Array();
-  var cRNsLength = new Array();
+  var crnsLength = new Array();
   var conflictCounter = 0;
 
   //makes an array of the lengths of the classes in CRNSwithTime
-  for(let i = 0; i < cRNsWithTime.length; i++)
+  for(let i = 0; i < crnsWithTime.length; i++)
   {
-    cRNsLength[i] = new Array();
+    crnsLength[i] = new Array();
     for(let j = startTimeIndex; j <= endTimeIndex; j+=2)
     {
-      cRNsLength[i][j] = cRNsWithTime[i][j+1] - cRNsWithTime[i][j];
+      crnsLength[i][j] = crnsWithTime[i][j+1] - crnsWithTime[i][j];
     }
   }
 
   //checks for conflicts
-  for(let i = 0; i < cRNsWithTime.length; i++)
+  for(let i = 0; i < crnsWithTime.length; i++)
   {
-    for(let j = 0; j < cRNsWithTime.length; j++)
+    for(let j = 0; j < crnsWithTime.length; j++)
     {
-      if(cRNsWithTime[i][cRNIndex] !== cRNsWithTime[j][cRNIndex])
+      if(crnsWithTime[i][crnIndex] !== crnsWithTime[j][crnIndex])
       {
         for(let k = startTimeIndex; k <= endTimeIndex; k+=2)
         {
-          if((cRNsWithTime[i][k] - cRNsWithTime[j][k] < cRNsLength[j][k] && cRNsWithTime[i][k] - cRNsWithTime[j][k] >= 0) || (cRNsWithTime[j][k] - cRNsWithTime[i][k] < cRNsLength[i][k] && cRNsWithTime[j][k] - cRNsWithTime[i][k] >= 0))
+          if((crnsWithTime[i][k] - crnsWithTime[j][k] < crnsLength[j][k] && crnsWithTime[i][k] - crnsWithTime[j][k] >= 0) || (crnsWithTime[j][k] - crnsWithTime[i][k] < crnsLength[i][k] && crnsWithTime[j][k] - crnsWithTime[i][k] >= 0))
           {
-            conflicts[conflictCounter] = cRNsWithTime[i][cRNIndex];
+            conflicts[conflictCounter] = crnsWithTime[i][crnIndex];
             conflictCounter++;
           }
         }
@@ -239,16 +251,16 @@ function sortForFitness(currentPop)
 }
 
 //the schedule object, takes in classesArray, CRNs, times, to make a schedule object
-function Schedule(classesArray, cRNs, times, timeWeight)
+function Schedule(classesArray, crns, times, timeWeight)
 {
-  var cRNsWithTime = getCRNsWithTime(cRNs, classesArray);
-  var timeData = getTimeData(cRNsWithTime, times, timeWeight);
-  var conflicts = getConflictFitness(cRNsWithTime)
+  var crnsWithTime = getCRNsWithTime(crns, classesArray);
+  var timeData = getTimeData(crnsWithTime, times, timeWeight);
+  var conflicts = getConflictFitness(crnsWithTime)
   this.conflicts = conflicts;
   this.conflictCount = conflicts.length;
   this.timeFitness = timeData[0];
   this.timeData = timeData.splice(1);
-  this.CRNs = cRNs;
+  this.CRNs = crns;
 }
 
 function scheduleBreed(schedule1, schedule2)
@@ -393,34 +405,57 @@ function scheduleListGenetics(classesArray, initPopSize, times, timeWeight, gene
   return listArray;
 }
 
-function scheduleDisplayer(scheduleToDisplay,classesArray,term)
+function scheduleDisplayer(scheduleToDisplay,classesArray,term,pullAvailability)
 {
   var tableID = (Math.random() + "ID").split(".")[1];
-  var cRNsWithTime = getCRNsWithTime(scheduleToDisplay.CRNs,classesArray);
-  $("div#form").append($("<h2/>").text("Schedule for " + term + ":"));
+  var crnsWithTime = getCRNsWithTime(scheduleToDisplay.CRNs,classesArray);
+  var crnBlacklist = new Array();
+  $("div#form").append($("<h2/>").text("Schedule for " + terms[0][1] + ":"));
   $("div#form").append($("<p/>").text("Debug info: time fitness: " + scheduleToDisplay.timeFitness + " conflicts: " + scheduleToDisplay.conflictCount));
-  $("div#form").append($("<table id=\"" + tableID + "\"/>").append("<tr> <th>Course Code</th> <th>CRN</th> <th>M Start</th> <th>M End</th> <th>T Start</th> <th>T End</th> <th>W Start</th> <th>W End</th> <th>R Start</th> <th>R End</th> <th>F Start</th> <th>F End</th> </tr>"));
+  $("div#form").append($("<table id=\"" + tableID + "\"/>").append("<tr> <th>Course Code</th> <th>CRN</th> <th>M Start</th> <th>M End</th> <th>T Start</th> <th>T End</th> <th>W Start</th> <th>W End</th> <th>R Start</th> <th>R End</th> <th>F Start</th> <th>F End</th> <th>Available Seats</th> </tr>"));
 
-  for(let i = 0; i < cRNsWithTime.length; i++)
+  for(let i = 0; i < crnsWithTime.length; i++)
   {
-    var trString = tableID + "DICK" + i + "row";
-    $("table#" + tableID).append($("<tr class='" + trString + "'><td>" + cRNsWithTime[i][courseCodeIndex] + "</td><td>" + cRNsWithTime[i][cRNIndex] + "</td>"));
+    var trID = tableID + "SUB" + i + "row";
+    $("table#" + tableID).append($("<tr class='" + trID + "'><td>" + crnsWithTime[i][courseCodeIndex] + "</td><td>" + crnsWithTime[i][crnIndex] + "</td>"));
     for(let j = startTimeIndex; j <= endTimeIndex; j++)
     {
       var time;
-      if(cRNsWithTime[i][j] === "") time = "";
-      else if(cRNsWithTime[i][j]%60 == 0) time = Math.floor(cRNsWithTime[i][j]/60) + ":" + cRNsWithTime[i][j]%60 + "0";
-      else time = Math.floor(cRNsWithTime[i][j]/60) + ":" + cRNsWithTime[i][j]%60;
-      $("tr." + trString).append($("<td/>").text(time));
+      if(crnsWithTime[i][j] === "") time = "";
+      else if(crnsWithTime[i][j]%60 == 0) time = Math.floor(crnsWithTime[i][j]/60) + ":" + crnsWithTime[i][j]%60 + "0";
+      else time = Math.floor(crnsWithTime[i][j]/60) + ":" + crnsWithTime[i][j]%60;
+      $("tr." + trID).append($("<td/>").text(time));
     }
+
+    if(crnBlacklist.indexOf(crnsWithTime[i][crnIndex]) < 0)
+    {
+      if(pullAvailability) getAndPrintAvailabilityData(crnsWithTime[i][crnIndex],term,trID);
+      crnBlacklist.push(crnsWithTime[i][crnIndex]);
+    }
+
     $("table#" + tableID).append("</tr>");
   }
 }
 
-function getAvailabilityData()
+function getAndPrintAvailabilityData(crn,term,trID)
 {
-  console.log("DICK dsfad");
-  fetch('https://registrar-apps.ucdavis.edu/courses/search/index.cfm')
-    .then(res => res.json())//response type
-    .then(data => console.log(data)); //log the data;
+  var termCode = terms[term][0];
+  var url = "https://cors-anywhere.herokuapp.com/https://registrar-apps.ucdavis.edu/courses/search/course.cfm?";
+  var crnUrl = "crn=" + crn;
+  var termCodeUrl = "&termCode=" + termCode;
+  var output = new Array();
+  fetch(url + crnUrl + termCodeUrl)
+    .then(res => res.text())
+    .then(data => {
+      var tempAvailableSeats = data.slice(data.indexOf("Available Seats"), data.indexOf("Maximum Enrollment"));
+      var availableSeats = tempAvailableSeats.slice(tempAvailableSeats.indexOf("ong>") + 4, tempAvailableSeats.indexOf("</td>")).trim();
+      output[0] = parseInt(availableSeats);
+
+      var tempMaxSeats = data.slice(data.indexOf("Maximum Enrollment"), data.indexOf("Meeting Times"));
+      var maximumSeats = tempMaxSeats.slice(tempMaxSeats.indexOf("ong>") + 4, tempMaxSeats.indexOf("</td>")).trim();
+      output[1] = parseInt(maximumSeats);
+
+      $("tr." + trID).append($("<td/>").text(output[0]));
+      return output;
+    });
 }
