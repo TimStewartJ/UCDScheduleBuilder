@@ -8,33 +8,19 @@ $(document).ready(function() {
         type: 'text',
         id: 'input',
         name: 'input',
-        placeholder: 'EX: MAT 021B, PHY 009A, CHE 002A' //example things
-      // OLD time inputs
-      // }), $("<p/>").text("Minimum Class Time"), //INPUT for minimum time
-      //   $("<input/>", {
-      //   type: 'time',
-      //   id: 'startTime',
-      //   name: 'startTime'
-      // }), $("<p/>").text("Maximum Class Time"), //input for maximum time
-      //   $("<input/>", {
-      //   type: 'time',
-      //   id: 'endTime',
-      //   name: 'endTime'
+        placeholder: 'EX: MAT 021B, PHY 009A, CHE 002A'
       }),
-        $("<p/>").text("Other Minimum Class Time"), //alternate input for time
+        $("<p/>").text("Minimum Class Time"), //alternate input for time
         $("<input type='text' id='startTime2' name='startTime2' data-format='HH:mm' data-template='HH : mm'>"),
-        $("<p/>").text("Other Maximum Class Time"), //alternate input for time
+        $("<p/>").text("Maximum Class Time"), //alternate input for time
         $("<input type='text' id='endTime2' name='endTime2' data-format='HH:mm' data-template='HH : mm'>"),
 
-        $("<p/>").text("Experimental Features!"), //alternate input for time
+        $("<p/>").text("Experimental Features!"), //Experimental feature header
 
-        $("<input type='checkbox' id='pullAvailability' name='pullAvailability'>"),
+        $("<input type='checkbox' id='pullAvailability' name='pullAvailability'>"), //checkbox to enable pulling class availablility
         $("<label for='pullAvailability'>Pull Class Availability</label>"),
-        $("<input type='checkbox' id='debugText' name='debugText'>"),
+        $("<input type='checkbox' id='debugText' name='debugText'>"), //checkbox to enable the debug text
         $("<label for='debugText'>Enable Debug Text</label>"),
-
-        //$("<input type='checkbox' id='pullAvailability' name='pullAvailability'>"),
-        //$("<label for='pullAvailability'>Pull Class Availability</label>"),
 
         $("<br/>"), $("<br/>"),
         $("<input/>", { //submit button
@@ -58,9 +44,6 @@ $(document).ready(function() {
       e.preventDefault(); //prevents reloading of the page
 
       var classes = $("#form :input").serializeArray()[0].value.split(','); //gets an array of all desired classes
-      //OLD time input
-      //var startTime = $("#form :input").serializeArray()[1].value.split(':'); //gets a string of the start
-      //var endTime = $("#form :input").serializeArray()[2].value.split(':'); //gets a string of the end time
       var startTime2 = $("#form :input").serializeArray()[1].value.split(':');
       var endTime2 = $("#form :input").serializeArray()[2].value.split(':');
       startTime = (60*parseInt(startTime2[0])) + parseInt(startTime2[1]);
@@ -71,13 +54,26 @@ $(document).ready(function() {
       }
       var pullAvailability = $("#pullAvailability")[0].checked;
       var debugText = $("#debugText")[0].checked;
+
       var term = 0;
 
+      let inputtedClassText;
+      let validClasses = false;
+
+      //console.log(classes[0]);
+
+      if (classes.length == 1 && classes[0] =="") inputtedClassText = "You didn't input any classes, please do so.";
+      else
+      {
+        inputtedClassText = "Your inputted classes are: " + classes;
+        validClasses = true;
+      }
+
       $("div#form").append(
-        $("<p/>").text("Your inputted classes are: " + classes) //appends their inputted classes
+        $("<p/>").text(inputtedClassText) //appends their inputted classes
       )
 
-      scheduler(classes, times, term, pullAvailability, debugText); //schedules classes for 1 term
+      if(validClasses) scheduler(classes, times, term, pullAvailability, debugText); //schedules classes for 1 term
   });
 });
 
@@ -87,8 +83,8 @@ var startTimeIndex = 1;
 var endTimeIndex = 10;
 var terms = [
   [202010,"Fall Quarter 2020"],
-  [202003,"Spring Quarter 2020"],
-  [202001,"Winter Quarter 2020"]
+  [202001,"Winter Quarter 2020"],
+  [202003,"Spring Quarter 2020"]
 ]
 
 //function that handles scheduling for one term
@@ -100,19 +96,19 @@ function scheduler(classes, times, term, pullAvailability, debugText)
   .then((data) => {
     //all of the data in the csv will be stored in a string called rawData
     var rawData = $.csv.toArrays(data);
-    var classesArray = CRNSearcher(rawData, classes); //fills up the classes array
+    var classesArray = getClassesArray(rawData, classes); //fills up the classes array
 
     var initPopSize = 50;
     var timeWeight = 1;
     var generations = 10;
-    var listCount = 8;
+    var listCount = 8; //try to keep list count even
     var finalScheduleList = scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount);
     scheduleDisplayer(finalScheduleList[0][0],classesArray,term,pullAvailability,debugText);
   })
 }
 
 //takes in the raw data and the requested courses, then returns an array of 2D arrays of all possible classes of a course
-function CRNSearcher(rawData, classes)
+function getClassesArray(rawData, classes)
 {
   var classesArray = new Array();
   for(var i = 0; i < classes.length; i++)
@@ -266,6 +262,7 @@ function Schedule(classesArray, crns, times, timeWeight)
   this.CRNs = crns;
 }
 
+//breeds two schedules, not used as of now, may have to be scrapped
 function scheduleBreed(schedule1, schedule2)
 {
   var schedule1Array = new Array();
@@ -330,7 +327,7 @@ function scheduleBreed(schedule1, schedule2)
   return finalCRNs;
 }
 
-//runs a genetic algorithm for the schedules (hopefully)
+//runs a genetic algorithm for the schedules, returns an array of size initPopSize of theoretically good schedules after going through a bunch of generations
 function scheduleGenetics(classesArray, initPopSize, times, timeWeight, generations)
 {
   var initPopulation = new Array();
@@ -374,6 +371,7 @@ function scheduleGenetics(classesArray, initPopSize, times, timeWeight, generati
   return currentPop;
 }
 
+//takes two schedule arrays and returns one that takes the best of both
 function scheduleListBreeder(scheduleList1, scheduleList2)
 {
   outputList = new Array();
@@ -389,6 +387,7 @@ function scheduleListBreeder(scheduleList1, scheduleList2)
   return outputList;
 }
 
+//handles making schedule lists, returns a final good one
 function scheduleListGenetics(classesArray, initPopSize, times, timeWeight, generations, listCount)
 {
   var listArray = new Array();
@@ -408,6 +407,7 @@ function scheduleListGenetics(classesArray, initPopSize, times, timeWeight, gene
   return listArray;
 }
 
+//displays schedule scheduleToDisplay on the website
 function scheduleDisplayer(scheduleToDisplay,classesArray,term,pullAvailability,debugText)
 {
   var tableID = (Math.random() + "ID").split(".")[1];
@@ -445,6 +445,7 @@ function scheduleDisplayer(scheduleToDisplay,classesArray,term,pullAvailability,
   }
 }
 
+//gets and prints availablility data
 function getAndPrintAvailabilityData(crn,term,trID)
 {
   var termCode = terms[term][0];
@@ -464,6 +465,5 @@ function getAndPrintAvailabilityData(crn,term,trID)
       output[1] = parseInt(maximumSeats);
 
       $("tr." + trID).append($("<td/>").text(output[0]));
-      return output;
     });
 }
