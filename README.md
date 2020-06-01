@@ -1,3 +1,3 @@
 # UCDScheduleBuilder
 
-Using a genetic algorithm, this will hopefully result in a website in which you can just input the classes that you want to take and a schedule is made as a result.
+To use this site, just input the class codes for the courses you want to take. This will make the best schedule it can given those courses, and return the CRNs for specific classes.
