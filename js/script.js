@@ -60,8 +60,6 @@ $(document).ready(function() {
       let inputtedClassText;
       let validClasses = false;
 
-      //console.log(classes[0]);
-
       if (classes.length == 1 && classes[0] =="") inputtedClassText = "You didn't input any classes, please do so.";
       else
       {
@@ -443,6 +441,8 @@ function scheduleDisplayer(scheduleToDisplay,classesArray,term,pullAvailability,
 
     $("table#" + tableID).append("</tr>");
   }
+
+  $("div#form").append($("<p/>").text("The CRNs are as follows: " + scheduleToDisplay.CRNs));
 }
 
 //gets and prints availablility data
