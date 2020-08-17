@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import useFullTimeSelector from './TimeSelector';
+import scheduler from './ScheduleGenerator';
 
 const App = () => {
   const [courses, setCourses] = useState('');
@@ -9,6 +10,7 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    console.log(ScheduleGeneratorRunner(courses, startTime, endTime));
     console.log(courses + " | " + startTime + " | " + endTime + " | " + debugText + " | ");
   }
 
@@ -44,6 +46,14 @@ const App = () => {
       />
     </form>
   );
+}
+
+const ScheduleGeneratorRunner = (courses, startTime, endTime) => {
+  var times = [
+    startTime.split(':')[0] * 60 + startTime.split(':')[1], 
+    endTime.split(':')[0] * 60 + endTime.split(':')[1]
+  ]
+  return scheduler(courses, times, 202010, false, false);
 }
 
 export default App;
