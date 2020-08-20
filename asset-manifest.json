@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/my-app/static/css/main.0f16e87a.chunk.css",
-    "main.js": "/my-app/static/js/main.76ea5bcd.chunk.js",
-    "main.js.map": "/my-app/static/js/main.76ea5bcd.chunk.js.map",
-    "runtime-main.js": "/my-app/static/js/runtime-main.58a6d01e.js",
-    "runtime-main.js.map": "/my-app/static/js/runtime-main.58a6d01e.js.map",
-    "static/js/2.3154652c.chunk.js": "/my-app/static/js/2.3154652c.chunk.js",
-    "static/js/2.3154652c.chunk.js.map": "/my-app/static/js/2.3154652c.chunk.js.map",
-    "index.html": "/my-app/index.html",
-    "precache-manifest.bae9a7eb25fcc4a82a4d9465ce4cee43.js": "/my-app/precache-manifest.bae9a7eb25fcc4a82a4d9465ce4cee43.js",
-    "service-worker.js": "/my-app/service-worker.js",
-    "static/css/main.0f16e87a.chunk.css.map": "/my-app/static/css/main.0f16e87a.chunk.css.map",
-    "static/js/2.3154652c.chunk.js.LICENSE.txt": "/my-app/static/js/2.3154652c.chunk.js.LICENSE.txt",
-    "static/media/202010.csv": "/my-app/static/media/202010.88d63a85.csv"
+    "main.css": "/UCDScheduleBuilder/static/css/main.0f16e87a.chunk.css",
+    "main.js": "/UCDScheduleBuilder/static/js/main.d7aa1416.chunk.js",
+    "main.js.map": "/UCDScheduleBuilder/static/js/main.d7aa1416.chunk.js.map",
+    "runtime-main.js": "/UCDScheduleBuilder/static/js/runtime-main.08e3987b.js",
+    "runtime-main.js.map": "/UCDScheduleBuilder/static/js/runtime-main.08e3987b.js.map",
+    "static/js/2.3154652c.chunk.js": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js",
+    "static/js/2.3154652c.chunk.js.map": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js.map",
+    "index.html": "/UCDScheduleBuilder/index.html",
+    "precache-manifest.f11095fbd7731fb48655399aacc8ae87.js": "/UCDScheduleBuilder/precache-manifest.f11095fbd7731fb48655399aacc8ae87.js",
+    "service-worker.js": "/UCDScheduleBuilder/service-worker.js",
+    "static/css/main.0f16e87a.chunk.css.map": "/UCDScheduleBuilder/static/css/main.0f16e87a.chunk.css.map",
+    "static/js/2.3154652c.chunk.js.LICENSE.txt": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js.LICENSE.txt",
+    "static/media/202010.csv": "/UCDScheduleBuilder/static/media/202010.88d63a85.csv"
   },
   "entrypoints": [
-    "static/js/runtime-main.58a6d01e.js",
+    "static/js/runtime-main.08e3987b.js",
     "static/js/2.3154652c.chunk.js",
     "static/css/main.0f16e87a.chunk.css",
-    "static/js/main.76ea5bcd.chunk.js"
+    "static/js/main.d7aa1416.chunk.js"
   ]
 }
