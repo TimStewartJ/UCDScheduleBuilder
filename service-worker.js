@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/UCDScheduleBuilder/precache-manifest.f11095fbd7731fb48655399aacc8ae87.js"
+  "/UCDScheduleBuilder/precache-manifest.bb062428950e37467b432473ce2c1880.js"
 );
 
 self.addEventListener('message', (event) => {

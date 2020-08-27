@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/UCDScheduleBuilder/static/css/main.0f16e87a.chunk.css",
-    "main.js": "/UCDScheduleBuilder/static/js/main.d7aa1416.chunk.js",
-    "main.js.map": "/UCDScheduleBuilder/static/js/main.d7aa1416.chunk.js.map",
+    "main.js": "/UCDScheduleBuilder/static/js/main.09082843.chunk.js",
+    "main.js.map": "/UCDScheduleBuilder/static/js/main.09082843.chunk.js.map",
     "runtime-main.js": "/UCDScheduleBuilder/static/js/runtime-main.08e3987b.js",
     "runtime-main.js.map": "/UCDScheduleBuilder/static/js/runtime-main.08e3987b.js.map",
     "static/js/2.3154652c.chunk.js": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js",
     "static/js/2.3154652c.chunk.js.map": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js.map",
     "index.html": "/UCDScheduleBuilder/index.html",
-    "precache-manifest.f11095fbd7731fb48655399aacc8ae87.js": "/UCDScheduleBuilder/precache-manifest.f11095fbd7731fb48655399aacc8ae87.js",
+    "precache-manifest.bb062428950e37467b432473ce2c1880.js": "/UCDScheduleBuilder/precache-manifest.bb062428950e37467b432473ce2c1880.js",
     "service-worker.js": "/UCDScheduleBuilder/service-worker.js",
     "static/css/main.0f16e87a.chunk.css.map": "/UCDScheduleBuilder/static/css/main.0f16e87a.chunk.css.map",
     "static/js/2.3154652c.chunk.js.LICENSE.txt": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js.LICENSE.txt",
@@ -18,6 +18,6 @@
     "static/js/runtime-main.08e3987b.js",
     "static/js/2.3154652c.chunk.js",
     "static/css/main.0f16e87a.chunk.css",
-    "static/js/main.d7aa1416.chunk.js"
+    "static/js/main.09082843.chunk.js"
   ]
 }

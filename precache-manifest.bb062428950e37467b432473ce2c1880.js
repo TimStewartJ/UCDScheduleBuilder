@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "7ad9a455c822c533b88eb91bc463bdc6",
+    "revision": "185cfc59d68f77593b1c25e9e807e171",
     "url": "/UCDScheduleBuilder/index.html"
   },
   {
-    "revision": "2cbcf2a667054a8cfb07",
+    "revision": "3164a7c9f592426ee2fd",
     "url": "/UCDScheduleBuilder/static/css/main.0f16e87a.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "2cbcf2a667054a8cfb07",
-    "url": "/UCDScheduleBuilder/static/js/main.d7aa1416.chunk.js"
+    "revision": "3164a7c9f592426ee2fd",
+    "url": "/UCDScheduleBuilder/static/js/main.09082843.chunk.js"
   },
   {
     "revision": "4ceb022dc77c9a9ce0c9",
