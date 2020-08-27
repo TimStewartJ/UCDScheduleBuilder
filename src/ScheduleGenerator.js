@@ -4,11 +4,11 @@ const courseCodeIndex = 11;
 const crnIndex = 0;
 const startTimeIndex = 1;
 const endTimeIndex = 10;
-const terms = [
+/*const terms = [
   [202010,"Fall Quarter 2020"],
   [202001,"Winter Quarter 2020"],
   [202003,"Spring Quarter 2020"]
-]
+]*/
 
 //function that handles scheduling for one term
 const scheduler = (classes, times, term, whitelist, blacklist, pullAvailability, debugText, devString) =>
@@ -33,6 +33,7 @@ const scheduler = (classes, times, term, whitelist, blacklist, pullAvailability,
     }
 
     var finalScheduleList = scheduleListGenetics(classesArray,initPopSize,times,timeWeight,generations,listCount);
+    if(debugText) changeDebugText(finalScheduleList[0]);
     return await finalScheduleList[0];
   }
 
@@ -206,71 +207,13 @@ function Schedule(classesArray, crns, times, timeWeight)
   this.timeData = timeData.splice(1);
   this.CRNs = crns;
   this.crnsWithTime = crnsWithTime;
+  this.debugText = false;
 }
 
-//breeds two schedules, not used as of now, may have to be scrapped
-function scheduleBreed(schedule1, schedule2)
+//function to change schedule's debug text to true
+function changeDebugText(schedule)
 {
-  var schedule1Array = [];
-  for(let i = 0; i < schedule1.CRNs.length; i++)
-  {
-    schedule1Array[i] = [];
-    schedule1Array[i][0] = schedule1.CRNs[i];
-    schedule1Array[i][1] = schedule1.conflicts.indexOf(schedule1.CRNs[i]);
-    schedule1Array[i][2] = schedule1.timeData.indexOf(schedule1.CRNs[i]);
-  }
-  var schedule2Array = [];
-  for(let i = 0; i < schedule2.CRNs.length; i++)
-  {
-    schedule2Array[i] = [];
-    schedule2Array[i][0] = schedule2.CRNs[i];
-    schedule2Array[i][1] = schedule2.conflicts.indexOf(schedule1.CRNs[i]);
-    schedule2Array[i][2] = schedule2.timeData.indexOf(schedule1.CRNs[i]);
-  }
-
-  var finalCRNs = [];
-  for(let i = 0; i < schedule1.CRNs.length; i++)
-  {
-    let whichScheduleForConflicts = -1;
-    let whichScheduleForTime = -1;
-    if(schedule1Array[i][1] === schedule2Array[i][1] && schedule2Array[i][1] === -1){} //no conficts
-    else
-    {
-      if(schedule1Array[i][1] < schedule2Array[i][1])
-      {
-        whichScheduleForConflicts = 0;
-      }
-      else
-      {
-        whichScheduleForConflicts = 1;
-      }
-    }
-
-    if(schedule1Array[i][2] === schedule2Array[i][2] && schedule2Array[i][2] === -1){} //no time things
-    else
-    {
-      if(schedule1Array[i][2] < schedule2Array[i][2])
-      {
-        whichScheduleForTime = 0;
-      }
-      else
-      {
-        whichScheduleForTime = 1;
-      }
-    }
-
-    if(whichScheduleForConflicts !== whichScheduleForTime)
-    {
-      if(whichScheduleForConflicts === 0) finalCRNs[i] = schedule1Array[i][0];
-      else finalCRNs[i] = schedule2Array[i][0];
-    }
-    else
-    {
-      if(whichScheduleForConflicts === 0) finalCRNs[i] = schedule1Array[i][0];
-      else finalCRNs[i] = schedule2Array[i][0];
-    }
-  }
-  return finalCRNs;
+  schedule.debugText = true;
 }
 
 //runs a genetic algorithm for the schedules, returns an array of size initPopSize of theoretically good schedules after going through a bunch of generations

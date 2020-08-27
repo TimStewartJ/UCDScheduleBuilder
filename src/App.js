@@ -19,7 +19,7 @@ const App = () => {
 
     if(devBool) tempDevString = devString;
 
-    ScheduleGeneratorRunner(courses, startTime, endTime, whitelist, blacklist, tempDevString);
+    ScheduleGeneratorRunner(courses, startTime, endTime, whitelist, blacklist, debugText, tempDevString);
   }
 
   const content = devBool
@@ -50,7 +50,7 @@ const App = () => {
         type='text'
         id='input'
         name='whitelist'
-        placeholder='EX: MAT 021B, PHY 009A, CHE 002A'
+        placeholder='EX: 38618'
         value={whitelist}
         onChange={event => setWhitelist(event.target.value)}
       />
@@ -59,7 +59,7 @@ const App = () => {
         type='text'
         id='input'
         name='blacklist'
-        placeholder='EX: MAT 021B, PHY 009A, CHE 002A'
+        placeholder='EX: 38618'
         value={blacklist}
         onChange={event => setBlacklist(event.target.value)}
       />

@@ -5,7 +5,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './scheduledisplay.css'
 
-const ScheduleGeneratorRunner = (courses, startTime, endTime, whitelist, blacklist, devString) => {
+const ScheduleGeneratorRunner = (courses, startTime, endTime, whitelist, blacklist, debugText, devString) => {
     //turns the inputted time strings into the ints that the schedule generator uses
     var times = [
       startTime.split(':')[0] * 60 + startTime.split(':')[1], 
@@ -29,7 +29,7 @@ const ScheduleGeneratorRunner = (courses, startTime, endTime, whitelist, blackli
     const scheduleWrapper = async () => {
         let tempDevString = '';
         if(devString !== '') tempDevString = devString;
-        let schedule = await scheduler(classes, times, 202010, whitelist, blacklist, false, false, tempDevString);
+        let schedule = await scheduler(classes, times, 202010, whitelist, blacklist, false, debugText, tempDevString);
         console.log(schedule);
         ReactDOM.render(
             <DisplaySchedule schedule={schedule} />,
@@ -47,7 +47,7 @@ const DisplaySchedule = (schedule) => {
         crnString += element + ", ";
     });
 
-    crnString += " Conflicts: " + schedule.schedule.conflictCount + " Time Fitness: " + schedule.schedule.timeFitness;
+    if(schedule.schedule.debugText) crnString += " Conflicts: " + schedule.schedule.conflictCount + " Time Fitness: " + schedule.schedule.timeFitness;
 
     const colorArray = [
         "Aquamarine",
@@ -121,7 +121,7 @@ const DisplaySchedule = (schedule) => {
         
         for(let i = 300; i <= 1410; i += 30) {
             let timeRightSide = (i - Math.floor(i/60)*60)/10;
-            let timeString = Math.floor(i/60) + ":" + timeRightSide + "0";
+            //let timeString = Math.floor(i/60) + ":" + timeRightSide + "0";
 
             let borderTopString = '';
             let borderBottomString = '';
@@ -175,164 +175,6 @@ const DisplaySchedule = (schedule) => {
                 { timeColumn }
             </div>
             { dayColumns }
-        </div>
-        </>
-    );
-}
-
-//old method using class html table
-const DisplayScheduleTableMethod = (schedule) => {
-
-    let crnString = '';
-    schedule.schedule.CRNs.forEach(element => {
-        crnString += element + ", ";
-    });
-
-    crnString += " Conflicts: " + schedule.schedule.conflictCount + " Time Fitness: " + schedule.schedule.timeFitness;
-
-    const colorArray = [
-        "Blue",
-        "Crimson",
-        "Brown",
-        "Cyan",
-        "DarkGreen",
-        "DarkOrange",
-        "DeepPink",
-        "Gold"
-    ];
-
-    let colorDict = {};
-
-    for(let i = 0; i < schedule.schedule.CRNs.length; i++) {
-        colorDict[schedule.schedule.CRNs[i]] = colorArray[i];
-    }
-
-    let tableBodyArray = [];
-
-    for(let i = 300; i <= 1410; i += 30) {
-        let timeRightSide = (i - Math.floor(i/60)*60)/10;
-        let timeString = Math.floor(i/60) + ":" + timeRightSide + "0";
-
-        let mondayString = '';
-        let tuesdayString = '';
-        let wednesdayString = '';
-        let thursdayString = '';
-        let fridayString = '';
-
-        schedule.schedule.crnsWithTime.forEach(crnWithTime => {
-            if (crnWithTime[1] <= i && crnWithTime[2] > i) mondayString = crnWithTime[11];
-            if (crnWithTime[3] <= i && crnWithTime[4] > i) tuesdayString = crnWithTime[11];
-            if (crnWithTime[5] <= i && crnWithTime[6] > i) wednesdayString = crnWithTime[11];
-            if (crnWithTime[7] <= i && crnWithTime[8] > i) thursdayString = crnWithTime[11];
-            if (crnWithTime[9] <= i && crnWithTime[10] > i) fridayString = crnWithTime[11];
-        });
-
-        let borderTopString = '';
-        let borderBottomString = '';
-
-        if(timeRightSide === 0) 
-        {
-            borderTopString = '1px solid black';
-            borderBottomString = '1px solid #141414';
-        }
-
-        tableBodyArray.push(
-            <tr key={ timeString + " row" } style={{borderTop: borderTopString, borderBottom: borderBottomString}}>
-                <td key={ timeString } style={{background: "#262626", textAlign: "right"}} >{ timeString }</td>
-                <td key={ timeString + " monday" }> { mondayString } </td>
-                <td key={ timeString + " tuesday" }> { tuesdayString } </td>
-                <td key={ timeString + " wednesday" }> { wednesdayString } </td>
-                <td key={ timeString + " thursday" }> { thursdayString } </td>
-                <td key={ timeString + " friday" }> { fridayString } </td>
-            </tr>
-        );
-    }
-
-    let tableOverlayArray = [];
-
-    for(let i = 300; i <= 1430; i+=10) {
-        let timeRightSide = (i - Math.floor(i/60)*60)/10;
-        let timeString = Math.floor(i/60) + ":" + timeRightSide + "0 OVERLAY";
-
-        let defaultColor = ""
-
-        let mondayString = defaultColor;
-        let tuesdayString = defaultColor;
-        let wednesdayString = defaultColor;
-        let thursdayString = defaultColor;
-        let fridayString = defaultColor;
-
-        schedule.schedule.crnsWithTime.forEach(crnWithTime => {
-            if (crnWithTime[1] <= i && crnWithTime[2] > i) mondayString = colorDict[crnWithTime[0]];
-            if (crnWithTime[3] <= i && crnWithTime[4] > i) tuesdayString = colorDict[crnWithTime[0]];
-            if (crnWithTime[5] <= i && crnWithTime[6] > i) wednesdayString = colorDict[crnWithTime[0]];
-            if (crnWithTime[7] <= i && crnWithTime[8] > i) thursdayString = colorDict[crnWithTime[0]];
-            if (crnWithTime[9] <= i && crnWithTime[10] > i) fridayString = colorDict[crnWithTime[0]];
-        });
-
-        let borderTopString = '';
-        let borderBottomString = '';
-
-        if(timeRightSide === 0) 
-        {
-            borderTopString = '1px solid black';
-        }
-
-        if(timeRightSide === 3) 
-        {
-            borderTopString = '1px solid #141414';
-        }
-
-        tableOverlayArray.push(
-            <tr key={ timeString + " row" } >
-                <td key={ timeString } style={{borderTop: borderTopString, borderBottom: borderBottomString}}></td>
-                <td key={ timeString + " monday" } style={{backgroundColor: mondayString}}></td>
-                <td key={ timeString + " tuesday" } style={{backgroundColor: tuesdayString}}></td>
-                <td key={ timeString + " wednesday" } style={{backgroundColor: wednesdayString}}></td>
-                <td key={ timeString + " thursday" } style={{backgroundColor: thursdayString}}></td>
-                <td key={ timeString + " friday" } style={{backgroundColor: fridayString}}></td>
-            </tr>
-        );
-    }
-
-    return (
-        <>
-        <p>CRNs: { crnString }</p>
-        <div id="wrapper">
-            <div id="main_table">
-            <table style={{border:"1px solid #000", borderCollapse: "collapse", tableLayout: "fixed", backgroundColor: "#212121"}}>
-                <thead style={{backgroundColor: "#3d3d3d", height: "50px"}}>
-                    <tr>
-                        <td style={{textAlign: "right", width: "10%"}}>TIME</td>
-                        <td>MONDAY</td>
-                        <td>TUESDAY</td>
-                        <td>WEDNESDAY</td>
-                        <td>THURSDAY</td>
-                        <td>FRIDAY</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    { tableBodyArray }
-                </tbody>
-            </table>
-            </div>
-            <div id="table_overlay">
-            <table style={{border:"1px solid #000", borderCollapse: "collapse", tableLayout: "fixed"}}>
-                <thead style={{backgroundColor: "#3d3d3d", height: "50px"}}>
-                    <tr>
-                        <td style={{textAlign: "right", width: "10%"}}>TIME</td>
-                        <td>MONDAY</td>
-                        <td>TUESDAY</td>
-                        <td>WEDNESDAY</td>
-                        <td>THURSDAY</td>
-                        <td>FRIDAY</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    { tableOverlayArray }
-                </tbody>
-            </table>
-            </div>
         </div>
         </>
     );
