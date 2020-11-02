@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "185cfc59d68f77593b1c25e9e807e171",
+    "revision": "5db43cb89c95e554d59130f350e9f273",
     "url": "/UCDScheduleBuilder/index.html"
   },
   {
-    "revision": "3164a7c9f592426ee2fd",
+    "revision": "551fcc37370a0208f829",
     "url": "/UCDScheduleBuilder/static/css/main.0f16e87a.chunk.css"
   },
   {
@@ -16,15 +16,15 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "3164a7c9f592426ee2fd",
-    "url": "/UCDScheduleBuilder/static/js/main.09082843.chunk.js"
+    "revision": "551fcc37370a0208f829",
+    "url": "/UCDScheduleBuilder/static/js/main.f5772e1f.chunk.js"
   },
   {
     "revision": "4ceb022dc77c9a9ce0c9",
     "url": "/UCDScheduleBuilder/static/js/runtime-main.08e3987b.js"
   },
   {
-    "revision": "88d63a85b17f3a976551254263ed856a",
-    "url": "/UCDScheduleBuilder/static/media/202010.88d63a85.csv"
+    "revision": "faaea4116429f5d6ed92681f1360e0ee",
+    "url": "/UCDScheduleBuilder/static/media/202101.faaea411.csv"
   }
 ]);
