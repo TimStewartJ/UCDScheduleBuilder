@@ -1,10 +1,11 @@
-import dataPath from './data/202010.csv';
+import dataPath from './data/202101.csv';
 
 const courseCodeIndex = 11;
 const crnIndex = 0;
 const startTimeIndex = 1;
 const endTimeIndex = 10;
 /*const terms = [
+  [202101,"Winter Quarter 2021"]
   [202010,"Fall Quarter 2020"],
   [202001,"Winter Quarter 2020"],
   [202003,"Spring Quarter 2020"]
