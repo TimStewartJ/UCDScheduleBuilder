@@ -18,19 +18,15 @@ const ScheduleGeneratorRunner = (courses, startTime, endTime, whitelist, blackli
     //input formatting for whitelist and blacklist
     whitelist = whitelist.split(',');
     blacklist = blacklist.split(',');
-    whitelist.forEach(e => {
-        e.trim();
-    });
-    blacklist.forEach(e => {
-        e.trim();
-    });
+    whitelist = whitelist.map(s => s.trim());
+    blacklist = blacklist.map(s => s.trim());
 
     //runs the schedule generator in a wrapper async function to wait for the promise
     const scheduleWrapper = async () => {
         let tempDevString = '';
         if(devString !== '') tempDevString = devString;
         let schedule = await scheduler(classes, times, 202010, whitelist, blacklist, false, debugText, tempDevString);
-        console.log(schedule);
+        //console.log(schedule);
         ReactDOM.render(
             <DisplaySchedule schedule={schedule} />,
             document.getElementById('output')

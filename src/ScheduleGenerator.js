@@ -73,7 +73,7 @@ function getClassesArray(rawData, classes, whitelist, blacklist)
   whitelistCourseIndexes.forEach(whitelistCourseIndex => {
     var tempArray = [];
     classesArray[whitelistCourseIndex].forEach(classArray => {
-      if(!(whitelist.indexOf(classArray[0]) < 0)) tempArray.push(classArray);
+      if(!(whitelist.indexOf(classArray[crnIndex]) < 0)) tempArray.push(classArray);
     });
     classesArray[whitelistCourseIndex] = tempArray;
   });
