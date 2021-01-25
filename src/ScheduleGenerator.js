@@ -1,4 +1,4 @@
-import dataPath from './data/202101.csv';
+import dataPath from './data/202103.csv';
 
 const courseCodeIndex = 11;
 const crnIndex = 0;
