@@ -4,6 +4,7 @@ import ScheduleGeneratorRunner from './ScheduleGeneratorRunner';
 
 const App = () => {
   const [courses, setCourses] = useState('');
+  const [courseWarning, setCourseWarning] = useState({});
   const [startTime, StartTimeSelector] = useFullTimeSelector();
   const [endTime, EndTimeSelector] = useFullTimeSelector();
   const [whitelist, setWhitelist] = useState('');
@@ -22,6 +23,12 @@ const App = () => {
     ScheduleGeneratorRunner(courses, startTime, endTime, whitelist, blacklist, debugText, tempDevString);
   }
 
+  const courseChecker = (value) => {
+    if(!(RegExp(/(\s*(\w{3}) \d{1,3}\w{0,2}\s*)(,\s*(\w{3})\s\d{1,3}\w{0,2}\s*)*/).test(value))) setCourseWarning({display: 'block'});
+    else setCourseWarning({display: 'none'});
+    setCourses(value);
+  }
+
   const content = devBool
     ? <div>
       <input
@@ -35,7 +42,7 @@ const App = () => {
     : null;
 
 	return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} autocomplete="off">
       <p>Enter the course codes of the classes you wish to take, each seperated by a comma.</p>
       <input
         type='text'
@@ -43,8 +50,9 @@ const App = () => {
         name='courses'
         placeholder='EX: MAT 021B, PHY 009A, CHE 002A'
         value={courses}
-        onChange={event => setCourses(event.target.value)}
+        onChange={event => courseChecker(event.target.value)}
       />
+      <div style={ courseWarning }><p>Warning! Input invalid.</p></div>
       <p>CRN Whitelist</p>
       <input
         type='text'

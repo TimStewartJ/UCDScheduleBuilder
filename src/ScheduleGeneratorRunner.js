@@ -13,7 +13,7 @@ const ScheduleGeneratorRunner = (courses, startTime, endTime, whitelist, blackli
     ];
 
     //splits the courses inputted to get a useable array
-    let classes = courses.split(',');
+    let classes = courses.toUpperCase().split(',');
 
     //input formatting for whitelist and blacklist
     whitelist = whitelist.split(',');
@@ -25,7 +25,7 @@ const ScheduleGeneratorRunner = (courses, startTime, endTime, whitelist, blackli
     const scheduleWrapper = async () => {
         let tempDevString = '';
         if(devString !== '') tempDevString = devString;
-        let schedule = await scheduler(classes, times, 202010, whitelist, blacklist, false, debugText, tempDevString);
+        let schedule = await scheduler(classes, times, 202110, whitelist, blacklist, false, debugText, tempDevString);
         //console.log(schedule);
         ReactDOM.render(
             <DisplaySchedule schedule={schedule} />,
@@ -42,8 +42,11 @@ const DisplaySchedule = (schedule) => {
     schedule.schedule.CRNs.forEach(element => {
         crnString += element + ", ";
     });
+    crnString = crnString.substring(0, crnString.length - 2);
 
-    if(schedule.schedule.debugText) crnString += " Conflicts: " + schedule.schedule.conflictCount + " Time Fitness: " + schedule.schedule.timeFitness;
+    crnString += " Conflicts: " + schedule.schedule.conflictCount;
+    
+    if(schedule.schedule.debugText) crnString += " Time Fitness: " + schedule.schedule.timeFitness;
 
     const colorArray = [
         "Aquamarine",
