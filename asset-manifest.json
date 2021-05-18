@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/UCDScheduleBuilder/static/css/main.0f16e87a.chunk.css",
-    "main.js": "/UCDScheduleBuilder/static/js/main.4671bcde.chunk.js",
-    "main.js.map": "/UCDScheduleBuilder/static/js/main.4671bcde.chunk.js.map",
+    "main.js": "/UCDScheduleBuilder/static/js/main.f7dacd0b.chunk.js",
+    "main.js.map": "/UCDScheduleBuilder/static/js/main.f7dacd0b.chunk.js.map",
     "runtime-main.js": "/UCDScheduleBuilder/static/js/runtime-main.08e3987b.js",
     "runtime-main.js.map": "/UCDScheduleBuilder/static/js/runtime-main.08e3987b.js.map",
     "static/js/2.3154652c.chunk.js": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js",
     "static/js/2.3154652c.chunk.js.map": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js.map",
     "index.html": "/UCDScheduleBuilder/index.html",
-    "precache-manifest.0695dee588719b53c9ce1a4394f57fbc.js": "/UCDScheduleBuilder/precache-manifest.0695dee588719b53c9ce1a4394f57fbc.js",
+    "precache-manifest.157fad1927063f185adb066f29da8315.js": "/UCDScheduleBuilder/precache-manifest.157fad1927063f185adb066f29da8315.js",
     "service-worker.js": "/UCDScheduleBuilder/service-worker.js",
     "static/css/main.0f16e87a.chunk.css.map": "/UCDScheduleBuilder/static/css/main.0f16e87a.chunk.css.map",
     "static/js/2.3154652c.chunk.js.LICENSE.txt": "/UCDScheduleBuilder/static/js/2.3154652c.chunk.js.LICENSE.txt",
-    "static/media/202103.csv": "/UCDScheduleBuilder/static/media/202103.1fd33ee3.csv"
+    "static/media/202110.csv": "/UCDScheduleBuilder/static/media/202110.1f149874.csv"
   },
   "entrypoints": [
     "static/js/runtime-main.08e3987b.js",
     "static/js/2.3154652c.chunk.js",
     "static/css/main.0f16e87a.chunk.css",
-    "static/js/main.4671bcde.chunk.js"
+    "static/js/main.f7dacd0b.chunk.js"
   ]
 }
