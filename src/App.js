@@ -43,7 +43,7 @@ const App = () => {
 
 	return (
     <form onSubmit={handleSubmit} autocomplete="off">
-      <p>Enter the course codes of the classes you wish to take, each seperated by a comma.</p>
+      <p>Enter the course codes of the classes you wish to take, each separated by a comma.</p>
       <input
         type='text'
         id='input'
